@@ -616,6 +616,7 @@ def createZipFromCwd(proxy, additionalPaths, package_all):
     Arguments:
     proxy - boolean as to whether to replace cert references with references to mitmproxy
     additionalPaths - list of directories not normally included in the zip file
+    package_all - Package everything under the folder. If set, additionalPaths will be ignored.
     """
     # zip up build and send it to machine
     with tempfile.NamedTemporaryFile(prefix='roku_build.', suffix='.zip', delete=False) as tempFile:
@@ -820,7 +821,7 @@ def main():
     parser.add_argument('--select-roku-ips', action='store_true', help="Filters list of IPs and returns all valid, reachable, roku IPs in list.")
     parser.add_argument('--select_roku_ips', action='store_true', help=argparse.SUPPRESS)
 
-    parser.add_argument('--package_all', action='store_true', help=argparse.SUPPRESS)
+    parser.add_argument('--package_all', action='store_true', help="Add everything under the folder into the target package. If set, automation flag will be ignored.")
 
     parser.add_argument(
         '-u',
