@@ -608,7 +608,7 @@ def getProxyCertificate():
     with open(certificatePath, "r") as fd:
         return fd.read()
 
-def createZipFromCwd(proxy, additionalPaths=[]):
+def createZipFromCwd(proxy, additionalPaths, package_all):
     """
     Creates a zip file from the current directory.  The manifest and references to the cert
     file can be dynamically altered at zip time.
@@ -632,24 +632,28 @@ def createZipFromCwd(proxy, additionalPaths=[]):
                         path = '%s/%s' % (root, f)
                         addFile(path)
 
-            # add manifest
-            zipFile.writestr('manifest', getDynamicManifest())
+            if package_all:
+                # walk dir, add stuff
+                addDirectory('.')
+            else:
+                # add manifest
+                zipFile.writestr('manifest', getDynamicManifest())
 
-            # add images
-            addDirectory('images')
+                # add images
+                addDirectory('images')
 
-            # add source code
-            addDirectory('source')
+                # add source code
+                addDirectory('source')
 
-            # add fonts
-            addDirectory('fonts')
+                # add fonts
+                addDirectory('fonts')
 
-            # add components
-            addDirectory('components')
+                # add components
+                addDirectory('components')
 
-            # add additional directories specified
-            for path in additionalPaths:
-                addDirectory(path)
+                # add additional directories specified
+                for path in additionalPaths:
+                    addDirectory(path)
 
             # if proxying copy over the mitmproxy certificate
             if proxy:
@@ -816,6 +820,8 @@ def main():
     parser.add_argument('--select-roku-ips', action='store_true', help="Filters list of IPs and returns all valid, reachable, roku IPs in list.")
     parser.add_argument('--select_roku_ips', action='store_true', help=argparse.SUPPRESS)
 
+    parser.add_argument('--package_all', action='store_true', help=argparse.SUPPRESS)
+
     parser.add_argument(
         '-u',
         '--user',
@@ -880,7 +886,7 @@ def main():
 
         additionalDirs = ['automation'] if args.automation else []
 
-        zipFile = createZipFromCwd(useProxy, additionalDirs)
+        zipFile = createZipFromCwd(useProxy, additionalDirs, args.package_all)
 
     if ip:
         deployZip(zipFile, ip, args.user)
